@@ -1,0 +1,18 @@
+# Allowlisting gitignore template for projects prevents us
+# from adding various unwanted local files, such as generated
+# files, developer configurations or IDE-specific files etc.
+
+# Ignore everything
+*
+
+# But not these files...
+!/.gitignore
+
+!README.md
+
+!Makefile
+
+!*.s
+
+# ...even if they are in subdirectories
+!*/
