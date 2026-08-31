@@ -1,8 +1,0 @@
-[default_config]
-assembler = "gas"
-instruction_set = "arm"
-
-[opts]
-compiler = "arm-linux-gnu-gcc"
-diagnostics = true
-default_diagnostics = true
