@@ -1,0 +1,12 @@
+break finished
+continue
+i r r5 r10 r11
+next
+next 
+next
+x/8dw &report
+
+You should see this:
+0x1111c:	109	-18	42	0
+0x1112c:	0	0	0	0
+
