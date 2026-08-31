@@ -21,26 +21,28 @@ run: $(TARGET)
 	qemu-arm ./$(TARGET)
 
 # Live remote debugging via QEMU's GDB stub
-debug: $(TARGET)
-	tmux split-window -h 'qemu-arm -g 1234 ./$(TARGET)'
-	tmux select-pane -L
-	$(GDB) $(TARGET) -ex "target remote :1234"
+QEMU_SESSION = $(TARGET)-qemu
+GDB_SESSION  = $(TARGET)-gdb
 
-# Force a core dump on crash and load it post-mortem.
-# qemu-arm honors the host's core-dump settings, so ulimit
-# has to be raised in THIS shell before it runs. Core files
-# land in the CWD by default; override /proc/sys/kernel/core_pattern
-# if your system routes cores elsewhere (e.g. systemd-coredump).
-core: $(TARGET)
-	ulimit -c unlimited && qemu-arm ./$(TARGET) || true
-	@ls *.core 1> /dev/null 2>&1 && \
-	  $(GDB) -q $(TARGET) $(lastword $(wildcard *.core)) \
-	    -ex "bt full" \
-	    -ex "info registers" \
-	    -ex "info frame" \
-	  || echo "No core file produced — did the program actually crash, or exit cleanly?"
+# Runs qemu (with GDB stub) and GDB in two independent tmux sessions.
+debug: $(TARGET)
+	tmux kill-session -t $(QEMU_SESSION) 2>/dev/null || true
+	tmux kill-session -t $(GDB_SESSION) 2>/dev/null || true
+	tmux new-session -d -s $(QEMU_SESSION) 'qemu-arm -g 1234 ./$(TARGET)'
+	tmux new-session -d -s $(GDB_SESSION) \
+		'$(GDB) $(TARGET) -ex "target remote :1234"'
+	@if [ -n "$$TMUX" ]; then \
+		tmux switch-client -t $(GDB_SESSION); \
+	else \
+		tmux attach-session -t $(GDB_SESSION); \
+	fi
+
+# Tear down both sessions at once.
+debug-stop:
+	tmux kill-session -t $(QEMU_SESSION) 2>/dev/null || true
+	tmux kill-session -t $(GDB_SESSION) 2>/dev/null || true
 
 clean:
 	rm -f $(OBJ) $(TARGET) *.core
 
-.PHONY: all run clean debug lint core
+.PHONY: all run clean debug debug-stop lint
