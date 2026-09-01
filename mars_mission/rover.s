@@ -21,10 +21,13 @@ _start:
     MOV r6, #0                @ r6 = Min
     MOV r7, #0                @ r7 = Max
 
-    LDR r8, =report
 
-@ Mission Two Data
+@ Mission Two Data -- Count positives, negatives, and zeroes, same loop as mission 1
 @ Offset 12, 16, 20
+    MOV r8, #0                @ r8 = count of positive numbers
+    MOV r9, #0                @ r9 = count of negative numbers
+    MOV r10, #0               @ r10 = count of zeroes
+
 
 @ Mission Three Data -- Safety Analysis (How many readings outside of safe range?)
 @ Offset 24
@@ -35,6 +38,9 @@ _start:
 
 @ Mission Five Data -- Optional
 @ Offset 28
+
+@ Scaffold rest of application data
+    LDR r12, =report        @ r12 = &report
 
     LDR r6, [r1]            @ peek at readings[0]
     MOV r10, r6             @ seed min
@@ -60,9 +66,9 @@ loop:
     B loop
 
 finished:
-    STR r5, [r8, #0]        @ store sum
-    STR r10, [r8, #4]       @ store min
-    STR r11, [r8, #8]       @ store max
+    STR r5, [r12, #0]        @ store sum
+    STR r10, [r12, #4]       @ store min
+    STR r11, [r12, #8]       @ store max
 @   SVC 0
 
 stop:
