@@ -10,29 +10,12 @@ _start:
     LDR r0, [r0]              @ r0 = num_readings
 
     LDR r1, =readings         @ r1 = address of readings[0]
-
     MOV r2, #0                @ r2 = loop counter
-
-    MOV r3, #0                @ r3 = Sum
-
-
-
-
-
-
-@   Mission Four Data
-@   Create a corrected copy of the telemetry in the array labeled `corrected`. 
-@   Clamp each value to the safe range
-
-
-@   Mission Five Data -- Optional
-@   Offset 28
-
 
 @ Scaffold rest of application data
     LDR r12, =report        @ r12 = &report
-
     LDR r5, [r1]            @ peek at readings[0]
+    MOV r3, #0                @ r3 = Sum
     MOV r10, r5             @ seed min
     MOV r11, r5             @ seed max
     MOV r6, #0              @ positive_count
@@ -45,7 +28,7 @@ loop:
     BGE finished
 
     LDR r4, [r1, r2, LSL #2]
-    ADD r3, r3, r4        @ sum+=n
+    ADD r3, r3, r4        @ sum += n
 
     CMP   r4, r10
     MOVLT r10, r4         @ n < current_min
@@ -54,8 +37,8 @@ loop:
     MOVGT r11, r4         @ n > current_max
 
     CMP   r4, #0
-    ADDGT r6, r6, #1
-    ADDLT r7, r7, #1
+    ADDGT r6, r6, #1      @ n > 0
+    ADDLT r7, r7, #1      @ n < 0
 
     CMP   r4, #SAFE_MIN
     ADDLT r8, r8, #1      @ n < SAFE_MIN
@@ -79,7 +62,7 @@ finished:
     STR r6, [r12, #12]        @ store positive_count
     STR r7, [r12, #16]        @ store negative_count
 
-@   Calculate zero_count for Mission Two
+@   Calculates zero_count for Mission Two
 @   Count of zeroes may be done by taking the difference of positive_count and negative_count  
     SUB r9, r0, r6            @ r9 = num_readings - positives
     SUB r9, r9, r7            @ r9 -= negatives
@@ -88,6 +71,13 @@ finished:
 @   Mission Three Data -- Safety Analysis (How many readings outside of safe range?)
 @   Offset 24
     STR r8, [r12, #24]        @ store unsafe_count
+
+@   Mission Four Data
+@   Create a corrected copy of the telemetry in the array labeled `corrected`. 
+@   Clamp each value to the safe range
+
+@   Mission Five Data -- Optional
+@   Offset 28
 
 @   SVC 0
 

@@ -1,9 +1,9 @@
-TARGET = rover
-SRC = rover.s
-OBJ = rover.o
+TARGET = mars_mission
+SRC = mars_mission.s
+OBJ = mars_mission.o
 AS = arm-linux-gnu-as
 LD = arm-linux-gnu-ld
-GDB = gdb
+GDB = arm-linux-gnu-gdb
 ASFLAGS = -march=armv7-a --warn -g
 
 all: $(TARGET)
