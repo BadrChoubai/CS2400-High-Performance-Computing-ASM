@@ -13,27 +13,20 @@ _start:
 
     MOV r2, #0                @ r2 = loop counter
 
-@   Mission One Data -- Sum of all readings, lowest and highest reading
-@   Offset 0, 4, 8
     MOV r3, #0                @ r3 = Sum
 
 
-@ Mission Two Data -- Count positives, negatives, and zeroes, same loop as mission 1
-@ Offset 12, 16, 20
-@ Count of zeroes may be done by taking the difference of positive_count and negative_count  
 
 
-@ Mission Three Data -- Safety Analysis (How many readings outside of safe range?)
-@ Offset 24
 
 
-@ Mission Four Data
-@ Create a corrected copy of the telemetry in the array labeled `corrected`. 
-@ Clamp each value to the safe range
+@   Mission Four Data
+@   Create a corrected copy of the telemetry in the array labeled `corrected`. 
+@   Clamp each value to the safe range
 
 
-@ Mission Five Data -- Optional
-@ Offset 28
+@   Mission Five Data -- Optional
+@   Offset 28
 
 
 @ Scaffold rest of application data
@@ -75,17 +68,27 @@ loop:
     B loop
 
 finished:
+@   Mission One Data -- Sum of all readings, lowest and highest reading
+@   Offset 0, 4, 8
     STR r3, [r12, #0]         @ store sum
     STR r10, [r12, #4]        @ store min
     STR r11, [r12, #8]        @ store max
+
+@   Mission Two Data -- Count positives, negatives, and zeroes
+@   Offset 12, 16, 20
     STR r6, [r12, #12]        @ store positive_count
     STR r7, [r12, #16]        @ store negative_count
 
+@   Calculate zero_count for Mission Two
+@   Count of zeroes may be done by taking the difference of positive_count and negative_count  
     SUB r9, r0, r6            @ r9 = num_readings - positives
     SUB r9, r9, r7            @ r9 -= negatives
     STR r9, [r12, #20]        @ store zero_count
 
+@   Mission Three Data -- Safety Analysis (How many readings outside of safe range?)
+@   Offset 24
     STR r8, [r12, #24]        @ store unsafe_count
+
 @   SVC 0
 
 stop:
