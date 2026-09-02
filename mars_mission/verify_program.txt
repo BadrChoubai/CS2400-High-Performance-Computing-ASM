@@ -1,0 +1,41 @@
+Verifying the program — Missions 1–4
+
+1. Break at the two key points and run:
+   break finished
+   break mission4_done
+   continue
+
+2. First breakpoint hits at `finished` (right after Missions 1-3's loop
+   ends, before any STRs run). Continue past it:
+   continue
+
+3. Second breakpoint hits at `mission4_done` — this is after every STR
+   for report AND every STR for corrected has executed, right before
+   the subroutine returns. This is the correct place to check memory,
+   not at `finished` itself (breakpoints stop BEFORE a line runs, so
+   checking memory at `finished` will show all zeros — that's expected,
+   not a bug).
+
+4. Check report (8 words):
+   x/8dw &report
+
+   Expected:
+   109  -18  42  6
+   3    1    3   0
+
+   (sum, min, max, positive_count, negative_count, zero_count,
+   unsafe_count, unused)
+
+5. Check corrected (10 words — report is only 8, don't stop early):
+   x/10dw &corrected
+
+   Expected:
+   12  -5  0   27
+   30  -10 7   30
+   -2  15
+
+   (each reading clamped to [-10, 30])
+
+If either output doesn't match, don't guess — step line-by-line from
+`finished` with `next` and check `i r` (registers) or `x` (memory)
+after each store to find exactly which one diverges first.

@@ -3,7 +3,7 @@ SRC = mars_mission.s
 OBJ = mars_mission.o
 AS = arm-linux-gnu-as
 LD = arm-linux-gnu-ld
-GDB = arm-linux-gnu-gdb
+GDB = gdb
 ASFLAGS = -march=armv7-a --warn -g
 
 all: $(TARGET)
