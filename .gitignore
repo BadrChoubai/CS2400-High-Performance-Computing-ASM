@@ -12,6 +12,7 @@
 
 !Makefile
 
+!*.md
 !*.s
 !*.txt
 
