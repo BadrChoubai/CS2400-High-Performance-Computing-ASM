@@ -1,3 +1,4 @@
+@ Badr Choubai
     .global _start
 
     .text 
@@ -10,11 +11,15 @@ _start:
     BL  count_thermal_shocks
 
     LDR r1, =shock_count
+    @ store result finally in r1
     STR r0, [r1]
 
 stop:
     B stop
 
+@ name      absolute_difference
+@ desc      Computes abs(a - b) without branching, using a conditional
+@           reverse-subtract to flip the sign only when the result is negative.
 @ params    r0 = first integer, r1 = second integer
 @ returns   r0 = absolute_difference 
 absolute_difference:
@@ -22,10 +27,16 @@ absolute_difference:
     RSBLT   r0, r0, #0
     BX      lr
 
+
+@ name      count_thermal_shocks
+@ desc      Scans the reading array for adjacent pairs whose absolute
+@           difference exceeds 20, and returns the count of such pairs.
 @ params    r0 = array address, r1 = number of readings
 @ returns   r0 = number of thermal shocks
 @ preserves r4-r6 
 count_thermal_shocks:
+    @ preserve lr because count_thermal_shocks is non-leaf. If not preserved, its 
+    @ own BL call to absolute_difference would overwrite it.
     PUSH {r4-r6, lr}
 
     @ Register Plan
