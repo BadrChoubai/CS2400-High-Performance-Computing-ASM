@@ -1,6 +1,8 @@
 @ Badr Choubai
     .global _start
 
+    .equ BOUNDARY, 20
+
     .text 
 _start:
     LDR sp, =stack_top
@@ -30,7 +32,7 @@ absolute_difference:
 
 @ name      count_thermal_shocks
 @ desc      Scans the reading array for adjacent pairs whose absolute
-@           difference exceeds 20, and returns the count of such pairs.
+@           difference exceeds BOUNDARY, and returns the count of such pairs.
 @ params    r0 = array address, r1 = number of readings
 @ returns   r0 = number of thermal shocks
 @ preserves r4-r6 
@@ -63,7 +65,7 @@ loop:
 
     @ Count differences greater than 20
     ADD   r4, r4, #4
-    CMP   r0, #20
+    CMP   r0, #BOUNDARY
     ADDGT r6, r6, #1
 
     @ Advance and repeat.
@@ -90,5 +92,3 @@ shock_count:
 stack_space:
     .space 1024
 stack_top:
-
-
